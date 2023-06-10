@@ -14,7 +14,7 @@ public:
 
     Bucket(const Bucket &rhs);
 
-    static bool find(int key);
+    bool find(int key);
 
     void insert(int key);
 
@@ -22,15 +22,24 @@ public:
 
     void print();
 
+    bool isFull();
+
     Bucket &operator=(const Bucket &rhs);
 
     friend std::ostream &operator<<(std::ostream &os, const Bucket &bucket);
+
+    void setLocalDepth(int depth);
+    int getLocalDepth();
+
+
 
 private:
     // Add private attributes
 
     std::vector<int> keys;
+
     int localDepth;
+    int bucketSize{};
 };
 
 
