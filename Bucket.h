@@ -14,6 +14,14 @@ public:
 
     Bucket(const Bucket &rhs);
 
+    static bool find(int key);
+
+    void insert(int key);
+
+    static bool remove(int key);
+
+    void print();
+
     Bucket &operator=(const Bucket &rhs);
 
     friend std::ostream &operator<<(std::ostream &os, const Bucket &bucket);

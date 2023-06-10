@@ -11,7 +11,7 @@ class ExtensibleHashTable {
 public:
     ExtensibleHashTable();
 
-    ExtensibleHashTable(int bucketSize);
+    explicit ExtensibleHashTable(int bucketSize);
 
     bool find(int key);
 
@@ -20,6 +20,8 @@ public:
     bool remove(int key);
 
     void print();
+
+    int hash(int key) const;
 
     // Add destructor, copy constructor, and overloaded assignment operator
 
@@ -32,12 +34,11 @@ public:
     friend std::ostream &operator<<(std::ostream &os, const ExtensibleHashTable &table);
 
 
-
-
 private:
     // Add private helper methods and attributes
 
     std::vector<Bucket *> directory;
+    int global_depth, bucket_size;
 };
 
 
