@@ -39,6 +39,8 @@ private:
 
     std::vector<Bucket *> directory;
     int global_depth, bucket_size;
+
+    void grow_directory_size();
 };
 
 

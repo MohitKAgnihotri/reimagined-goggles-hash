@@ -6,7 +6,7 @@
 
 class Bucket {
 public:
-    explicit Bucket(int size);
+    explicit Bucket(int depth, int size);
 
     // Add destructor, copy constructor, and overloaded assignment operator
 
@@ -16,9 +16,9 @@ public:
 
     bool find(int key);
 
-    void insert(int key);
+    int insert(int key);
 
-    static bool remove(int key);
+    bool remove(int key);
 
     void print();
 
@@ -28,18 +28,17 @@ public:
 
     friend std::ostream &operator<<(std::ostream &os, const Bucket &bucket);
 
-    void setLocalDepth(int depth);
-    int getLocalDepth();
+    int getLocalDepth() const;
+    void increase_depth();
+    void decrease_depth();
 
 
-
+    std::vector<int> keys;
 private:
     // Add private attributes
 
-    std::vector<int> keys;
-
     int localDepth;
-    int bucketSize{};
+    int bucketSize;
 };
 
 

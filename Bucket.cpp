@@ -1,8 +1,8 @@
 
 #include "Bucket.h"
 
-Bucket::Bucket(int size) {
-    localDepth = 0;
+Bucket::Bucket(int depth, int size) {
+    localDepth = depth;
     bucketSize = size;
 }
 
@@ -25,6 +25,7 @@ std::ostream &operator<<(std::ostream &os, const Bucket &bucket) {
     }
     os << "]";
     os << " (" << bucket.localDepth << ")";
+    return os;
 }
 
 Bucket::Bucket(const Bucket &rhs) {
@@ -42,13 +43,37 @@ bool Bucket::find(int key) {
     return false;
 }
 
-void Bucket::insert(int key) {
-    this->keys.push_back(key);
-    setLocalDepth(getLocalDepth() + 1);
+int Bucket::insert(int key) {
+    bool is_key_present = false;
+
+    // Find if the key is already in the bucket
+    std::vector<int>::iterator it;
+    for (it = keys.begin(); it != keys.end(); it++) {
+        if (*it == key) {
+            is_key_present = true;
+            break;
+        }
+    }
+
+    // If the key is not present, add it to the bucket
+    // check if the bucket is full
+    if (!is_key_present && !isFull()) {
+        keys.push_back(key);
+        return 1;
+    }
+    return 0;
+
+
 }
 
 bool Bucket::remove(int key) {
-    return false;
+    // Linear search
+    for (int i = 0; i < keys.size(); i++) {
+        if (keys[i] == key) {
+            keys.erase(keys.begin() + i);
+            return true;
+        }
+    }
 }
 
 void Bucket::print() {
@@ -56,16 +81,20 @@ void Bucket::print() {
 }
 
 bool Bucket::isFull() {
-    if (localDepth < bucketSize) {
+    if (keys.size() < bucketSize) {
         return false;
     }
     return true;
 }
 
-void Bucket::setLocalDepth(int depth) {
-    localDepth = depth;
+int Bucket::getLocalDepth() const {
+    return localDepth;
 }
 
-int Bucket::getLocalDepth() {
-    return localDepth;
+void Bucket::increase_depth() {
+    localDepth++;
+}
+
+void Bucket::decrease_depth() {
+    localDepth--;
 }

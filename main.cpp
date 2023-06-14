@@ -5,15 +5,30 @@ using namespace std;
 
 int main()
 {
-    ExtensibleHashTable table(4);
-    ExtensibleHashTable table2;
+    ExtensibleHashTable table(3);
+
 
     table.insert(64);
+    cout << table;
     table.insert(200);
-    cout << table.find(64) << endl;
+    cout << table;
+    table.insert(66);
+    cout << table;
+    table.insert(153);
 
     cout << table;
-    cout << table2;
+    table.insert(218);
+    cout << table;
+    table.insert(67);
+    cout << table;
+    table.insert(13);
+    cout << table;
+    table.insert(253);
+    cout << table;
+    table.insert(109);
+    cout << table;
+
+
 
 
 
