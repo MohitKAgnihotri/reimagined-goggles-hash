@@ -32,6 +32,8 @@ ExtensibleHashTable::ExtensibleHashTable(int bucketSize) {
 
 void ExtensibleHashTable::insert(int key) {
 
+    int directory_index = -1;
+
     //Use the hash function to find the directory index.
     int index = hash(key);
 
@@ -55,48 +57,54 @@ void ExtensibleHashTable::insert(int key) {
 
             // re-distribute the keys in the bucket
             // create a new bucket
-            Bucket *new_bucket = new Bucket(bucket->getLocalDepth(),bucket_size);
+            auto *new_bucket = new Bucket(bucket->getLocalDepth(),bucket_size);
 
             // Derive the index based on the key which is to be inserted
-            int new_index = hash(key);
-            directory[new_index] = new_bucket;
+            directory_index = hash(key);
+            directory[directory_index] = new_bucket;
 
             // re-distribute the keys in the bucket
             for (int i = 0; i < bucket->keys.size(); i++) {
-                int key = bucket->keys[i];
-                int new_index = hash(key);
+                int key_to_distribute = bucket->keys[i];
+                int new_index = hash(key_to_distribute);
                 if (new_index != index) {
-                    new_bucket->insert(key);
-                    bucket->remove(key);
+                    new_bucket->insert(key_to_distribute);
+                    bucket->remove(key_to_distribute);
                 }
             }
-
             // Insert the new key
-            new_bucket->insert(key);
+            insert(key);
         } else if (bucket->getLocalDepth() < global_depth) {
 
-            // Update the local depth of the old bucket
-            bucket->increase_depth();
+            // Get local and global depth
+            int local_depth = bucket->getLocalDepth();
 
-            // re-distribute the keys in the bucket
-            // create a new bucket
-            Bucket *new_bucket = new Bucket(bucket->getLocalDepth(),bucket_size);
+            // Create two new buckets
+            auto *new_bucket1 = new Bucket(local_depth + 1, bucket_size);
+            auto *new_bucket2 = new Bucket(local_depth + 1, bucket_size);
 
-            // Derive the index based on the key which is to be inserted
-            int new_index = hash(key);
-            directory[new_index] = new_bucket;
 
-            // re-distribute the keys in the bucket
-            for (int i = 0; i < bucket->keys.size(); i++) {
-                int key = bucket->keys[i];
-                int new_index = hash(key);
-                if (new_index != index) {
-                    new_bucket->insert(key);
-                    bucket->remove(key);
+            // Iterate through the keys in the bucket and re-distribute them
+            for (int key_to_distribute : bucket->keys) {
+                int new_index = hash(key_to_distribute);
+                if (((new_index >> local_depth) & 0x1) == 0) {
+                    new_bucket1->insert(key_to_distribute);
+                } else {
+                    new_bucket2->insert(key_to_distribute);
                 }
             }
+
+            // Update the directory
+            directory[index] = new_bucket1;
+            directory[(index ^ (1 << local_depth))] = new_bucket2;
+
+            // Free the memory of the old bucket
+            delete bucket;
+
+
             // Insert the new key
-            new_bucket->insert(key);
+            insert(key);
+
 
         } else {
 
@@ -107,6 +115,7 @@ void ExtensibleHashTable::insert(int key) {
     }
 
 }
+
 
 void ExtensibleHashTable::grow_directory_size() {
     // the directory size  must be doubled before creating the new bucket.
