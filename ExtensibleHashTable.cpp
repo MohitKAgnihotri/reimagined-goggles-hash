@@ -2,6 +2,8 @@
 #include <iostream>
 #include "ExtensibleHashTable.h"
 
+using namespace std;
+
 
 
 ExtensibleHashTable::ExtensibleHashTable() {
@@ -145,10 +147,25 @@ bool ExtensibleHashTable::find(int key) {
 }
 
 bool ExtensibleHashTable::remove(int key) {
-    return false;
+
+    // Use the hash function to find the directory index.
+    int index = hash(key);
+
+    // Check index is in range
+    if (index < 0 || index >= directory.size()) {
+        return false;
+    }
+
+    // Use the index to find the bucket
+    Bucket *bucket = directory[index];
+
+    // Use the bucket to remove the key
+    return bucket->remove(key);
+
 }
 
 void ExtensibleHashTable::print() {
+    cout << *this << endl;
 
 }
 
@@ -156,13 +173,6 @@ ExtensibleHashTable::~ExtensibleHashTable() {
 
 }
 
-ExtensibleHashTable::ExtensibleHashTable(const ExtensibleHashTable &rhs) {
-
-}
-
-ExtensibleHashTable &ExtensibleHashTable::operator=(const ExtensibleHashTable &rhs) {
-
-}
 
 
 //example.
@@ -171,6 +181,7 @@ std::ostream &operator<<(std::ostream &os, const ExtensibleHashTable &table) {
     for (int i = 0; i < table.directory.size(); i++) {
         os << i << ": " << table.directory[i] <<" --> " << *table.directory[i] << std::endl;
     }
+    return os;
 }
 
 int ExtensibleHashTable::hash(int key) const {
